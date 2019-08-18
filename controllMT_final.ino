@@ -1,10 +1,4 @@
-#include <FastLED.h>
 #include "Header.h"
-#include <ros.h>
-#include <std_msgs/String.h>
-#include <std_msgs/UInt8MultiArray.h>
-#include <geometry_msgs/Pose2D.h>
-#include <geometry_msgs/Twist.h>
 
 ros::NodeHandle nh;
 
@@ -61,15 +55,11 @@ void setup() {
 
 void MotorSpeedControl(void)
 {   
-    // Run time 0.0004 s
     encUpdate();
     poseUpdate();
     cmd_vel2wheel(Vd,Wd,&WLd, &WRd);
     cmd_vel2wheel(Vr,Wr,&WLr, &WRr);
     ModelController(Vd, Wd, WLr, WRr);
-    //pid_controller1(Vd, Wd, WLr, WRr);
-    
-    
 }
 
 void loop() {

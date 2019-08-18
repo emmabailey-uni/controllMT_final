@@ -48,8 +48,7 @@ void ModelController(float Vd, float Wd, float w_l_real, float w_r_real){
     inputr = inputr_1 + a_*refr + b_*refr_1 - c_*outputr - d_*outputr_1;
     inputl = inputl_1 + a_*refl + b_*refl_1 - c_*outputl - d_*outputl_1;
 
-    // 3: Write output# Rename C++ executable without prefix
-## The above r
+    // 3: Write output
     
     changeDIR(inputr,inputl);
 

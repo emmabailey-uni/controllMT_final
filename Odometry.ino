@@ -27,9 +27,3 @@ void cmd_vel2wheel(float V,float W,float *WL, float *WR){
   *WL = (V - b*W/2)/r;
   *WR = (V + b*W/2)/r;
 }
-
-/*
-float DL = ((2.0*M_PI*r)/C) * NL;
-float DR = ((2.0*M_PI*r)/C) * NR;
-float D = (DR+DL)/2.0;
-*/

@@ -1,6 +1,12 @@
 #include <Encoder.h>
 #include <TimerOne.h>
 #include <TimerThree.h>
+#include <FastLED.h>
+#include <ros.h>
+#include <std_msgs/String.h>
+#include <std_msgs/UInt8MultiArray.h>
+#include <geometry_msgs/Pose2D.h>
+#include <geometry_msgs/Twist.h>
 
 // Sensor pins
 #define sensorpinL A2
