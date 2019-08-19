@@ -1,5 +1,5 @@
 void setLED(const std_msgs::UInt8MultiArray& LED_msg ){
-
+  // LED_msg.data = array of uint8 [0-255]
   //Turn both LED's on - same colour
   leds[0] = CRGB(255,20,147);
   FastLED.show(); 
