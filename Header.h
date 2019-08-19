@@ -1,6 +1,7 @@
 #include <Encoder.h>
 #include <TimerOne.h>
-#include <TimerThree.h>
+#include <TimerThree.h> // TimerThree uses pin 11, so it cannot be used for analogWrite(), but might still be used for digitalWrite()
+#include <TimerFive.h> //TimerFive uses pins [44 - 45 - 46], Buzzer should still work with TimerThree, but if not change to TimerFive
 #include <FastLED.h>
 #include <ros.h>
 #include <std_msgs/String.h>
@@ -8,12 +9,16 @@
 #include <geometry_msgs/Pose2D.h>
 #include <geometry_msgs/Twist.h>
 #include <std_msgs/Float32.h>
+#include <rosserial_arduino/Test.h>
 
 
 // Sensor pins
 #define sensorpinL A2
 #define sensorpinM A3
 #define sensorpinR A4
+
+//Buzzer Pin
+#define BUZZER_PIN 11
 
 //LED Pin
 #define LED_PIN     10
