@@ -7,6 +7,8 @@
 #include <std_msgs/UInt8MultiArray.h>
 #include <geometry_msgs/Pose2D.h>
 #include <geometry_msgs/Twist.h>
+#include <std_msgs/Float32.h>
+
 
 // Sensor pins
 #define sensorpinL A2

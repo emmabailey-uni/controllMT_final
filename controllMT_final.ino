@@ -4,13 +4,41 @@ ros::NodeHandle nh;
 
 //Publisher message definition
 geometry_msgs::Pose2D pose_msg;
-std_msgs::float32 sensor_msg;
+std_msgs::Float32 front_sensor_msg;
+std_msgs::Float32 left_sensor_msg;
+std_msgs::Float32 right_sensor_msg;
 
 //Publisher Topics
 ros::Publisher pose("pose", &pose_msg);
-ros::Publisher front_dis("front_dis", &sensor_msg); 
-ros::Publisher left_dis("left_dis", &sensor_msg); 
-ros::Publisher right_dis("right_dis", &sensor_msg); 
+ros::Publisher front_dis("front_dis", &front_sensor_msg); 
+ros::Publisher left_dis("left_dis", &left_sensor_msg); 
+ros::Publisher right_dis("right_dis", &right_sensor_msg); 
+
+//Callback Functions
+void setLED(const std_msgs::UInt8MultiArray& LED_msg ){
+  // LED_msg.data = array of uint8 [0-255]
+  //Turn both LED's on - same colour
+  leds[0] = CRGB(255,20,147);
+  FastLED.show(); 
+  leds[1] = CRGB(255,20,147);
+  FastLED.show();
+  
+}
+
+void readVelocity(const geometry_msgs::Twist& vel_msg){
+
+  Vd = vel_msg.linear.x;
+  Wd = vel_msg.angular.z;
+  
+}
+
+void setPos(const geometry_msgs::Pose2D& pos_set_msg){
+
+  current_pos.x = pos_set_msg.x;
+  current_pos.y = pos_set_msg.y;
+  current_pos.theta = pos_set_msg.theta;
+  
+}
 
 //Subscriber Topics)
 ros::Subscriber<std_msgs::UInt8MultiArray> sub_leds("rgb_leds", setLED);
@@ -69,18 +97,18 @@ void loop() {
   if (current_time-previous_time>= sampling_time){
     previous_time=current_time;
 
-    pose_msg pose_MSG;
-    pose_MSG.x = robot_pos.x;
-    pose_MSG.y = robot_pos.y;
-    pose_MSG.theta = robot_pos.theta;
+    geometry_msgs::Pose2D pose_MSG;
+    pose_MSG.x = current_pos.x;
+    pose_MSG.y = current_pos.y;
+    pose_MSG.theta = current_pos.theta;
     
 
     //Publish Topics
     //DONE WRONG MUST CHANGE
-    pose.publish(pose_MSG);
-    front_dis.publish(front_distance);
-    left_dis.publish(left_distance);
-    right_dis.publish(right_distance);
+    pose.publish(&pose_MSG);
+    front_dis.publish(&front_sensor_msg);
+    left_dis.publish(&left_sensor_msg);
+    right_dis.publish(&right_sensor_msg);
 
     //Spin node to process callbacks
     nh.spinOnce();
