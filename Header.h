@@ -69,7 +69,8 @@ typedef struct {
 }robot_pos;
 
 // Initialize global structs
-robot_pos current_pos ={0,0,0};
+robot_pos current_pos = {0.0,0.0,0.0};
+robot_pos initial_pos;
 
 // Time keeping varibales
 unsigned long current_time = 0;
@@ -83,9 +84,9 @@ long oldPosition_L  = 0;
 float NL,NR; 
 
 // Variables for distance measurements
-float left_dis = 0;
-float middle_dis = 0;
-float right_dis = 0;
+float left_dis;
+float middle_dis;
+float right_dis;
 
 // Varibales for desired and real velocities
 float Vr, Wr;

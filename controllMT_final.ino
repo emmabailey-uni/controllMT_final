@@ -1,6 +1,9 @@
 #include "Header.h"
 
+bool flag_init = false;
+
 ros::NodeHandle nh;
+
 //Service message type for Ros service
 using rosserial_arduino::Test; 
 
@@ -65,10 +68,10 @@ void setVelocity(const geometry_msgs::Twist& vel_msg){
 }
 
 void setPos(const geometry_msgs::Pose2D& pos_set_msg){
-
-  current_pos.x = pos_set_msg.x;
-  current_pos.y = pos_set_msg.y;
-  current_pos.theta = pos_set_msg.theta;
+  
+  initial_pos.x = pos_set_msg.x;
+  initial_pos.y = pos_set_msg.y;
+  initial_pos.theta = pos_set_msg.theta;
   
 }
 
@@ -78,15 +81,24 @@ ros::Subscriber<geometry_msgs::Twist> sub_cmd_vel("cmd_vel", setVelocity);
 ros::Subscriber<geometry_msgs::Pose2D> sub_set_pose("set_pose", setPos);
 
 //Service server
-ros::ServiceServer<Test::Request, Test::Response> buzzer_service("~switch_buzzer_state",&switchBuzzerState);
+ros::ServiceServer<Test::Request, Test::Response> buzzer_service("switch_buzzer_state",&switchBuzzerState);
 
-// Set desired robo velocities
-//float Vd = 0.07; // in range [-0.08, 0.08] [m/s]
-//float Wd= 0; // in range [-1.7, 1.7] [rad/s]
 
 void setup() {
   //Initialise ROS serial node
   nh.initNode();
+
+  
+  while(!nh.connected()){
+    nh.spinOnce();
+  }
+  
+  nh.getHardware()->setBaud(57600);
+
+  //Subscriber Initilisation
+  nh.subscribe(sub_set_pose);
+  nh.subscribe(sub_leds);
+  nh.subscribe(sub_cmd_vel);
 
   //Advertising Service for Buzzer
   nh.advertiseService(buzzer_service);
@@ -96,14 +108,8 @@ void setup() {
   nh.advertise(front_distance);
   nh.advertise(left_distance);
   nh.advertise(right_distance);
-
-  //Subscriber Initilisation
-  nh.subscribe(sub_leds);
-  nh.subscribe(sub_cmd_vel);
-  nh.subscribe(sub_set_pose);
   
-  nh.getHardware()->setBaud(115200);
-
+ 
   //Defining type of LED, fills array with LED objects
   FastLED.addLeds<WS2812B, LED_PIN, GRB>(leds, NUM_LEDS);
 
@@ -115,8 +121,10 @@ void setup() {
   pinMode(DIRR,OUTPUT);
   pinMode(DIRL,OUTPUT);
 
-  Timer3.initialize(10000); // 10000 microseconds = 0.01 s
-  Timer3.attachInterrupt(MotorSpeedControl); // Update speed when timer overlows (100Hz)  
+  Timer5.initialize(10000); // 10000 microseconds = 0.01 s
+  Timer5.attachInterrupt(MotorSpeedControl); // Update speed when timer overlows (100Hz)  
+  nh.spinOnce();
+
 }
 
 void MotorSpeedControl(void)
@@ -129,16 +137,24 @@ void MotorSpeedControl(void)
 }
 
 void loop() {
-  current_time=micros();
+  current_time=millis(); 
+
+  
 
   // Start 10Hz loop
   if (current_time-previous_time>= sampling_time){
     previous_time=current_time;
+    
+    readSensors(&left_dis, &middle_dis, &right_dis);
+    front_sensor_msg.data = middle_dis;
+    left_sensor_msg.data = left_dis;
+    right_sensor_msg.data = right_dis;
 
     geometry_msgs::Pose2D pose_MSG;
-    pose_MSG.x = current_pos.x;
-    pose_MSG.y = current_pos.y;
-    pose_MSG.theta = current_pos.theta;
+    pose_MSG.x = current_pos.x + initial_pos.x;
+    pose_MSG.y = current_pos.y + initial_pos.y;
+    pose_MSG.theta = current_pos.theta + initial_pos.theta;
+
     
 
     //Publish Topics
@@ -147,8 +163,10 @@ void loop() {
     left_distance.publish(&left_sensor_msg);
     right_distance.publish(&right_sensor_msg);
 
+    
     //Spin node to process callbacks
     nh.spinOnce();
 
   }
+
 }
