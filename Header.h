@@ -78,9 +78,9 @@ long oldPosition_L  = 0;
 float NL,NR; 
 
 // Variables for distance measurements
-float left_distance = 0;
-float middle_distance = 0;
-float right_distance = 0;
+float left_dis = 0;
+float middle_dis = 0;
+float right_dis = 0;
 
 // Varibales for desired and real velocities
 float Vr, Wr;

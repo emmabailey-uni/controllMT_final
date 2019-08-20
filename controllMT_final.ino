@@ -10,9 +10,9 @@ std_msgs::Float32 right_sensor_msg;
 
 //Publisher Topics
 ros::Publisher pose("pose", &pose_msg);
-ros::Publisher front_dis("front_dis", &front_sensor_msg); 
-ros::Publisher left_dis("left_dis", &left_sensor_msg); 
-ros::Publisher right_dis("right_dis", &right_sensor_msg); 
+ros::Publisher front_distance("front_distance", &front_sensor_msg); 
+ros::Publisher left_distance("left_distance", &left_sensor_msg); 
+ros::Publisher right_distance("right_distance", &right_sensor_msg); 
 
 //Callback Functions
 void setLED(const std_msgs::UInt8MultiArray& LED_msg ){
@@ -55,9 +55,9 @@ void setup() {
 
   //Advertising Publisher Topics (Initilisation)
   nh.advertise(pose);
-  nh.advertise(front_dis);
-  nh.advertise(left_dis);
-  nh.advertise(right_dis);
+  nh.advertise(front_distance);
+  nh.advertise(left_distance);
+  nh.advertise(right_distance);
 
   //Subscriber Initilisation
   nh.subscribe(sub_leds);
@@ -104,51 +104,13 @@ void loop() {
     
 
     //Publish Topics
-    //DONE WRONG MUST CHANGE
     pose.publish(&pose_MSG);
-    front_dis.publish(&front_sensor_msg);
-    left_dis.publish(&left_sensor_msg);
-    right_dis.publish(&right_sensor_msg);
+    front_distance.publish(&front_sensor_msg);
+    left_distance.publish(&left_sensor_msg);
+    right_distance.publish(&right_sensor_msg);
 
     //Spin node to process callbacks
     nh.spinOnce();
 
   }
 }
-
-
-
-  /////////////////////////////////////////////////////////////////////
-  //Serial prints
-  /*Serial.print("X = ");
-  Serial.print(current_pos.x);
-  
-  Serial.print("Y = ");
-  Serial.println(current_pos.y);
-  
-  Serial.print("Theta = ");
-  Serial.println(current_pos.theta);
-  
-  Serial.print("NR = ");
-  Serial.print(NR);
-  
-  Serial.print("NL = ");
-  Serial.println(NL);   
-  
-  
-  //Serial.print("real WL = ");
-  
-  
-  //Serial.print("real WR = ");
-  //Serial.println(WRr);
-  
-  //print all the values of the IR sensors
-  readSensors(&left_distance, &middle_distance, &right_distance); // distance from each sensor [m]
-  Serial.println("Left: "); 
-  Serial.println(left_distance);
-  Serial.println("Middle: ");  
-  Serial.println(middle_distance);
-  Serial.println("Right: "); 
-  Serial.println(right_distance);
-  */
-    
