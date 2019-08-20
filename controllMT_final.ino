@@ -1,6 +1,9 @@
 #include "Header.h"
 
 ros::NodeHandle nh;
+//Service message type for Ros service
+using rosserial_arduino::Test; 
+
 
 //Publisher message definition
 geometry_msgs::Pose2D pose_msg;
@@ -14,18 +17,47 @@ ros::Publisher front_distance("front_distance", &front_sensor_msg);
 ros::Publisher left_distance("left_distance", &left_sensor_msg); 
 ros::Publisher right_distance("right_distance", &right_sensor_msg); 
 
+
+
+//Service callback function
+void switchBuzzerState(const Test::Request & req, Test::Response & res){
+  
+  int buzzer_state = atoi(&req.input[0]);
+  
+  if(buzzer_state == 0){
+  
+    digitalWrite(BUZZER_PIN,LOW);
+  
+    res.output = "Buzzer OFF";
+  
+  }else if(buzzer_state == 1){
+  
+    digitalWrite(BUZZER_PIN,HIGH);
+  
+    res.output = "Buzzer ON";
+  
+  }else{
+    res.output = "Unknown input command";
+  }
+}
+
+
+
 //Callback Functions
+//NOT SURE HOW AND IF THE COMPILER KNOWS THE LENGTH OF LED_msg, THIS MIGHT NOT COMPILE http://alexsleat.co.uk/2011/07/02/ros-publishing-and-subscribing-to-arrays/
 void setLED(const std_msgs::UInt8MultiArray& LED_msg ){
+  /*
   // LED_msg.data = array of uint8 [0-255]
   //Turn both LED's on - same colour
-  leds[0] = CRGB(255,20,147);
+  leds[0] = CRGB(LED_msg[0],LED_msg[1],LED_msg[2]);
   FastLED.show(); 
-  leds[1] = CRGB(255,20,147);
+  leds[1] = CRGB(LED_msg[3],LED_msg[4],LED_msg[5]);
   FastLED.show();
+  */
   
 }
 
-void readVelocity(const geometry_msgs::Twist& vel_msg){
+void setVelocity(const geometry_msgs::Twist& vel_msg){
 
   Vd = vel_msg.linear.x;
   Wd = vel_msg.angular.z;
@@ -42,8 +74,11 @@ void setPos(const geometry_msgs::Pose2D& pos_set_msg){
 
 //Subscriber Topics)
 ros::Subscriber<std_msgs::UInt8MultiArray> sub_leds("rgb_leds", setLED);
-ros::Subscriber<geometry_msgs::Twist> sub_cmd_vel("cmd_vel", readVelocity);
+ros::Subscriber<geometry_msgs::Twist> sub_cmd_vel("cmd_vel", setVelocity);
 ros::Subscriber<geometry_msgs::Pose2D> sub_set_pose("set_pose", setPos);
+
+//Service server
+ros::ServiceServer<Test::Request, Test::Response> buzzer_service("~switch_buzzer_state",&switchBuzzerState);
 
 // Set desired robo velocities
 //float Vd = 0.07; // in range [-0.08, 0.08] [m/s]
@@ -53,6 +88,9 @@ void setup() {
   //Initialise ROS serial node
   nh.initNode();
 
+  //Advertising Service for Buzzer
+  nh.advertiseService(buzzer_service);
+  
   //Advertising Publisher Topics (Initilisation)
   nh.advertise(pose);
   nh.advertise(front_distance);
