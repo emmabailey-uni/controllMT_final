@@ -85,15 +85,11 @@ ros::ServiceServer<Test::Request, Test::Response> buzzer_service("switch_buzzer_
 
 
 void setup() {
+   
+  nh.getHardware()->setBaud(57600);
+
   //Initialise ROS serial node
   nh.initNode();
-
-  
-  while(!nh.connected()){
-    nh.spinOnce();
-  }
-  
-  nh.getHardware()->setBaud(57600);
 
   //Subscriber Initilisation
   nh.subscribe(sub_set_pose);
@@ -108,7 +104,10 @@ void setup() {
   nh.advertise(front_distance);
   nh.advertise(left_distance);
   nh.advertise(right_distance);
-  
+
+  while(!nh.connected()){
+    nh.spinOnce();
+  }
  
   //Defining type of LED, fills array with LED objects
   FastLED.addLeds<WS2812B, LED_PIN, GRB>(leds, NUM_LEDS);
