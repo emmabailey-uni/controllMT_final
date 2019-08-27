@@ -105,36 +105,39 @@ void MotorSpeedControl(void)
 }
 
 void loop() {
-  current_time=millis(); 
+  while(nh.connected()){
+    current_time=millis(); 
+    
+    // Start 10Hz loop
+    if ((current_time-previous_time>= sampling_time)){
+      previous_time=current_time;
+      
+      readSensors(&left_dis, &middle_dis, &right_dis);
+      front_sensor_msg.data = middle_dis;
+      left_sensor_msg.data = left_dis;
+      right_sensor_msg.data = right_dis;
   
-  // Start 10Hz loop
-  if ((current_time-previous_time>= sampling_time)){
-    previous_time=current_time;
-    
-    readSensors(&left_dis, &middle_dis, &right_dis);
-    front_sensor_msg.data = middle_dis;
-    left_sensor_msg.data = left_dis;
-    right_sensor_msg.data = right_dis;
-
-    geometry_msgs::Pose2D pose_MSG;
-    pose_MSG.x = current_pos.x + initial_pos.x;
-    pose_MSG.y = current_pos.y + initial_pos.y;
-    pose_MSG.theta = current_pos.theta + initial_pos.theta;
-
-    
-
-    //Publish Topics
-    pose.publish(&pose_MSG);
-    front_distance.publish(&front_sensor_msg);
-    left_distance.publish(&left_sensor_msg);
-    right_distance.publish(&right_sensor_msg);
-
-    
-    //Spin node to process callbacks
-    nh.spinOnce();
-
+      geometry_msgs::Pose2D pose_MSG;
+      pose_MSG.x = current_pos.x + initial_pos.x;
+      pose_MSG.y = current_pos.y + initial_pos.y;
+      pose_MSG.theta = current_pos.theta + initial_pos.theta;
+  
+      
+  
+      //Publish Topics
+      pose.publish(&pose_MSG);
+      front_distance.publish(&front_sensor_msg);
+      left_distance.publish(&left_sensor_msg);
+      right_distance.publish(&right_sensor_msg);
+  
+      
+      //Spin node to process callbacks
+      nh.spinOnce();
+    }
   }
-
+  // If ros is not connected, don't move
+  Vd = 0.0;
+  Wd = 0.0;
 }
 
 /*

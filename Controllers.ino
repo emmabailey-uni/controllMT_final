@@ -42,6 +42,20 @@ void ModelController(float Vd, float Wd, float w_l_real, float w_r_real){
     // 1: Calc ref and update current output [r,y]
     refl = (Vd - (b*Wd)/2.0)/r; 
     refr = (Vd + (b*Wd)/2.0)/r;
+
+    // Setting bounds on possible desired wheel velocities +/- 0.075 [m/s]
+    if(refl < -max_linear_vel){
+      refl = -max_linear_vel;
+    }
+    if(refl > max_linear_vel){
+      refl = max_linear_vel;
+    }
+     if(refr < -max_linear_vel){
+      refr = -max_linear_vel;
+    }
+    if(refr > max_linear_vel){
+      refr = max_linear_vel;
+    }
     outputr = w_r_real;
     outputl = w_l_real;
 
