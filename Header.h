@@ -62,8 +62,8 @@ const float c_ = 5.55328540582497*scale;
 const float d_ = -3.24811305031929*scale;
 
 // Velocity limits
-float max_linear_vel = 0.075;
-float max_angular_vel = 1.3;
+float max_linear_vel = 0.08;
+float max_angular_vel = 1.5;
 
 // Robo position struct
 typedef struct {
