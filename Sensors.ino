@@ -20,8 +20,19 @@ float readSensors(float* left, float* mid, float* right){
     left_[i] = 198.9*(pow(valL, -1.265)) + 0.01932;
     suml = suml + left_[i];
   }
-
-  *left = suml/10;
-  *mid = summ/10;
-  *right = sumr/10;
+  float left_sens = suml/10;
+  float mid_sens = summ/10;
+  float right_sens = sumr/10;
+  if((suml/10) > 0.8){
+    left_sens = 0.8;
+  }
+  if((sumr/10) > 0.8){
+    right_sens = 0.8;
+  }
+  if((summ/10) > 0.8){
+    mid_sens = 0.8;
+  }
+  *left = left_sens;
+  *mid = mid_sens;
+  *right = right_sens;
 }

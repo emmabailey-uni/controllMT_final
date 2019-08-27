@@ -15,6 +15,7 @@ void changeDIR(float RightCMD, float LeftCMD){
 
   }
 
+
 // Model based controller - Bogdan [step response 0.2 sec, variables calculated using matlab]
 void ModelController(float Vd, float Wd, float w_l_real, float w_r_real){
   
@@ -63,3 +64,56 @@ void ModelController(float Vd, float Wd, float w_l_real, float w_r_real){
     outputr_1 = outputr;
     outputl_1 = outputl;
   }
+/*
+
+  // PID controller - Bogdan & Joao [step response 0.8 sec with Kp = 2, Ki = 250, Kd = 0]
+void pid_controller1(float Vd, float Wd, float w_l_real, float w_r_real){
+
+    // Finding desired wheel velocities
+    float w_l_des, w_r_des;
+    w_l_des = (Vd - (b*Wd)/2.0)/r;
+    w_r_des = (Vd + (b*Wd)/2.0)/r;
+
+    // Calculating the error
+    float error_l = w_l_des - w_l_real;
+    float error_r = w_r_des - w_r_real;
+    
+    // Static varibales
+    float integral_active_zone = 5;
+    static float last_error_r;
+    static float last_error_l;
+    static float integral_error_r;
+    static float integral_error_l;
+   
+    
+    // Calculating proportional part
+    float proportional_r = kp*error_r;
+    float proportional_l = kp*error_l;
+    
+    // Calculating integral part
+    integral_error_r += error_r*dt;    
+    integral_error_l += error_l*dt;
+    float integral_r = ki*integral_error_r;
+    float integral_l = ki*integral_error_l;
+    
+    // Calculating derivative part
+    float derivative_r = kd*((error_r - last_error_r)/dt);
+    float derivative_l = kd*((error_l - last_error_l)/dt);
+  
+    
+    // Calculating total output
+    PID.right = proportional_r + integral_r + derivative_r;
+    PID.left = proportional_l + integral_l + derivative_l;
+    
+    //Updating the error
+    last_error_l = error_l;
+    last_error_r = error_r;
+
+    // Change DIR of the motors if necessary
+    changeDIR(PID.right,PID.left);
+
+    // Write to the motors
+    analogWrite(PWMR,fabs(PID.right));
+    analogWrite(PWML,fabs(PID.left));
+}
+*/

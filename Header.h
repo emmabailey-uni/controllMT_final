@@ -18,7 +18,7 @@
 #define sensorpinR A4
 
 //Buzzer Pin
-#define BUZZER_PIN 11
+//#define BUZZER_PIN 11
 
 //LED Pin
 #define LED_PIN     10
@@ -92,7 +92,10 @@ float right_dis;
 float Vr, Wr;
 float WLd, WRd; 
 float WLr, WRr; 
-float Vd, Wd;
+float Vd = 0.0;
+float Wd = 0.0;
 
 // Flag for initialization of the model based controller
 int ctr_Flag = 0;
+bool vel_Flag = false;
+bool init_pos_Flag = false;
