@@ -21,20 +21,20 @@ ros::Publisher right_distance("right_distance", &right_sensor_msg);
 void setVelocity(const geometry_msgs::Twist& vel_msg){
   float Vd_ = vel_msg.linear.x;
   float Wd_ = vel_msg.angular.z;
-  if(Vd_ > 0.07 ){
-    Vd_ = 0.07;
+  if(Vd_ > 0.075 ){
+    Vd_ = 0.075;
   }
-  if(Vd_ < -0.07 ){
-    Vd_ = -0.07;
+  if(Vd_ < -0.075 ){
+    Vd_ = -0.075;
   }
-  if(Wd_ > 1.3 ){
-    Wd_ = 1.3;
+  if(Wd_ > 1.58 ){
+    Wd_ = 1.58;
   }
-  if(Wd_ < -1.3 ){
-    Wd_ = -1.3;
+  if(Wd_ < -1.58 ){
+    Wd_ = -1.58;
   }
-  Vd = Vd_; //[+/- 0.08 m/s]
-  Wd = Wd_; //[+/- 1.6 rad/s]
+  Vd = Vd_; //[+/- 0.075 m/s]
+  Wd = Wd_; //[+/- 1.58 rad/s]
   vel_Flag = true;
   
 }
@@ -83,8 +83,8 @@ void setup() {
   pinMode(DIRL,OUTPUT);
 
 
-  Timer3.initialize(10000); // 10000 microseconds = 0.01 s
-  Timer3.attachInterrupt(MotorSpeedControl); // Update speed when timer overlows (100Hz)  
+  Timer3.initialize(100000); // 100000 microseconds = 0.1 s
+  Timer3.attachInterrupt(MotorSpeedControl); // Update speed when timer overlows (10Hz)  
   nh.spinOnce();
 
 }
@@ -96,8 +96,8 @@ void MotorSpeedControl(void)
       poseUpdate();
       cmd_vel2wheel(Vd,Wd,&WLd, &WRd);
       cmd_vel2wheel(Vr,Wr,&WLr, &WRr);
-      ModelController(Vd, Wd, WLr, WRr);
-      //pid_controller1(Vd, Wd, WLr, WRr);
+      //ModelController(Vd, Wd, WLr, WRr);
+      pid_controller1(Vd, Wd, WLr, WRr);
     } else{
       Vd = 0;
       Wd = 0;

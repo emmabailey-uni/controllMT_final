@@ -15,7 +15,7 @@ void changeDIR(float RightCMD, float LeftCMD){
 
   }
 
-
+/*
 // Model based controller - Bogdan [step response 0.2 sec, variables calculated using matlab]
 void ModelController(float Vd, float Wd, float w_l_real, float w_r_real){
   
@@ -43,7 +43,7 @@ void ModelController(float Vd, float Wd, float w_l_real, float w_r_real){
     refl = (Vd - (b*Wd)/2.0)/r; 
     refr = (Vd + (b*Wd)/2.0)/r;
 
-    // Setting bounds on possible desired wheel velocities +/- 0.075 [m/s]
+    // Setting bounds on possible desired wheel velocities +/- 5.0 [rad/s]
     if(refl < -max_angular_vel){
       refl = -max_angular_vel;
     }
@@ -77,16 +77,31 @@ void ModelController(float Vd, float Wd, float w_l_real, float w_r_real){
     inputl_1 = inputl;
     outputr_1 = outputr;
     outputl_1 = outputl;
-  }
-/*
+  }*/
 
-  // PID controller - Bogdan & Joao [step response 0.8 sec with Kp = 2, Ki = 250, Kd = 0]
+// PID controller - Bogdan & Joao [step response 0.8 sec with Kp = 2, Ki = 250, Kd = 0]
 void pid_controller1(float Vd, float Wd, float w_l_real, float w_r_real){
 
+    float inputr, inputl;
+    
     // Finding desired wheel velocities
     float w_l_des, w_r_des;
     w_l_des = (Vd - (b*Wd)/2.0)/r;
     w_r_des = (Vd + (b*Wd)/2.0)/r;
+
+    // Setting bounds on possible desired wheel velocities +/- 4.7 [rad/s]
+    if(w_l_des < -max_angular_vel){
+      w_l_des = -max_angular_vel;
+    }
+    if(w_l_des > max_angular_vel){
+      w_l_des = max_angular_vel;
+    }
+    if(w_r_des < -max_angular_vel){
+      w_r_des = -max_angular_vel;
+    }
+    if(w_r_des > max_angular_vel){
+      w_r_des = max_angular_vel;
+    }
 
     // Calculating the error
     float error_l = w_l_des - w_l_real;
@@ -116,18 +131,18 @@ void pid_controller1(float Vd, float Wd, float w_l_real, float w_r_real){
   
     
     // Calculating total output
-    PID.right = proportional_r + integral_r + derivative_r;
-    PID.left = proportional_l + integral_l + derivative_l;
+    inputr = proportional_r + integral_r + derivative_r;
+    inputl = proportional_l + integral_l + derivative_l;
+    
     
     //Updating the error
     last_error_l = error_l;
     last_error_r = error_r;
 
     // Change DIR of the motors if necessary
-    changeDIR(PID.right,PID.left);
+    changeDIR (inputr,inputl);
 
     // Write to the motors
-    analogWrite(PWMR,fabs(PID.right));
-    analogWrite(PWML,fabs(PID.left));
+    analogWrite(PWMR,fabs(inputr));
+    analogWrite(PWML,fabs(inputl));
 }
-*/
